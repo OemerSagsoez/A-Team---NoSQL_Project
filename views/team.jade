@@ -1,0 +1,21 @@
+body
+	a(href='/') Zurück
+	h1= objects.name
+	#objects
+		table(border=1)
+			- each val, key in objects
+				th= key 
+			tr.obj
+				- each val, key in objects
+					td.key= val
+	if (typeof(objects.player) !== 'undefined') && (objects.player.length > 0)
+		h2 Spieler
+		#spieler
+			table(border=1)
+				- each val, key in objects.player[0]
+					th= key
+				-each valtr, keytr in objects.player
+					tr.obj
+						- each valp, keyp in valtr
+							td.key= valp
+				

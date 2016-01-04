@@ -1,0 +1,20 @@
+{
+	{"team":"1. FC Köln", "picid":9},
+	{"team":"1. FC Mainz 05", "picid":21},
+	{"team":"TSG 1899 Hoffenheim", "picid":24},
+	{"team":"Bayer Leverkusen", "picid":205},
+	{"team":"FC Bayern München", "picid":209},
+	{"team":"Borussia Mönchengladbach", "picid":253},
+	{"team":"BVB Dortmund", "picid":258},
+	{"team":"Eintracht Frankfurt", "picid":530},
+	{"team":"FC Augsburg", "picid":594},
+	{"team":"FC Ingolstadt", "picid":644},
+	{"team":"Schalke 04", "picid":694},
+	{"team":"Hamburger SV", "picid":943},
+	{"team":"Hannover 96", "picid":951},
+	{"team":"Hertha BSC Berlin", "picid":977},
+	{"team":"Darmstadt 1898", "picid":1852},
+	{"team":"VFB Stuttgart", "picid":2076},
+	{"team":"Wolfsburg", "picid":2086},
+	{"team":"Werder Bremen", "picid":2134}
+}

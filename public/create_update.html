@@ -1,0 +1,215 @@
+<html>
+	<head>
+	<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+	
+		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
+		<script>
+			getFromServer("/teams", showTeams);
+			function showTeams(data) {
+				$.each(data, function(index, value) {
+					var form = jQuery('<form/>', {action: "", onsubmit: "return false;"}).appendTo('#teams');
+					var div;
+					div = jQuery('<div/>', {class: "clearleft left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "id", value: value._id}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "name", value: value.name}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "team_id", value: value.team_id}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "pic_id", value: value.pic_id, style: "width:45px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:160px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "coach", value: value.coach, style: "width:150px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:40px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "league", value: value.league, style: "width:25px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:100px"}).appendTo(form);
+					jQuery('<button/>', {onclick: "submitForm(this);", text: "Senden"}).appendTo(div);
+				});
+			}
+			
+			function submitForm(button) {
+				var form = button.form;
+				var id = form.id.value;
+				var name = form.name.value;
+				var team_id = form.team_id.value;
+				var pic_id = form.pic_id.value;
+				var coach = form.coach.value;
+				var league = form.league.value;
+				var jsonString = '{';
+				if(name != "") jsonString += '"name":"'+name+'", ';
+				if(team_id != "") jsonString += '"team_id":"'+team_id+'", ';
+				if(pic_id != "") jsonString += '"pic_id":"'+pic_id+'", ';
+				if(coach != "") jsonString += '"coach":"'+coach+'", ';
+				if(league != "") jsonString += '"league":"'+league+'", ';
+				jsonString += '"active": "true"';
+				jsonString += '}';
+				if(id == "") {
+					postToServer("/teams", jsonString, function(data) {
+						console.log(data);
+					});
+				} else {
+					putToServer("/teams/"+id, jsonString, function(data) {
+						console.log(data);
+					});
+				}
+			}
+			
+			
+			/*
+				{
+				  "1":{"datum":"12.12.2015", "plays": [
+					{"home":"5662fb468d62f280161408c4", "away": "5662fb8c8d62f280161408c5", "time":"19:00", "homegoals": 0, "awaygoals": 0, "tore": []},
+					{"home":"5668622217002d780f5de954", "away": "5668623617002d780f5de955", "time":"18:00", "homegoals": 0, "awaygoals": 0, "tore": []}
+				  ]},
+				  "2":{"datum":"19.12.2015", "plays": [
+					{"home":"5662fb468d62f280161408c4", "away": "5668622217002d780f5de954", "time":"19:00", "homegoals": 0, "awaygoals": 0, "tore": []},
+					{"home":"5662fb8c8d62f280161408c5", "away": "5668623617002d780f5de955", "time":"18:00", "homegoals": 0, "awaygoals": 0, "tore": []}
+				  ]}
+				}*/
+			
+			
+			function spielplanErzeugen() {
+				var openTeams = new Array();
+				for(var i = 1; i < 19; i++) {
+					openTeams[i] = new Array();
+					for(var j = 1; j < 19; j++) {
+						if(i != j) 
+							openTeams[i][j] = j;
+					}
+				}
+				var schedule = new Array();
+				getFromServer("/teams", function(data) {
+					for(var i = 1; i < 18; i++) {		//17 Spieltage je runde
+						console.log("i: "+i);
+						var gameday = new Array();
+						for(var j = 1; j < 10; j++) {		//10
+							console.log("j: "+j);
+							console.log(openTeams);
+							var teameins = 1;
+							while(teamInGameday(gameday, teameins)) {
+								teameins = Math.round(Math.random() * (18 - 1)) + 1;
+							}
+							console.log(teameins);
+							var teamzwei = 0;
+							var o = 0;
+							console.log("teameins: "+teameins);
+							console.log(gameday);
+							while(teamzwei == 0 || teamInGameday(gameday, teamzwei) || typeof teamzwei == "undefined" || openTeams[teameins][teamzwei] == 0 || teamzwei != teameins) {
+								teamzwei = Math.round(Math.random() * (18 - 1)) + 1;
+								//teamzwei = openTeams[teameins][openTeams[teameins].length-o];
+								/*console.log("----------");
+								console.log(teamzwei == 0);
+								console.log(teamInGameday(gameday, teamzwei));
+								console.log(typeof teamzwei == "undefined");
+								console.log(openTeams[teameins][teamzwei] == 0);
+								console.log("----------");*/
+								o++;
+								if(o > 30) {
+									teamzwei = switchGame(openTeams, gameday, teameins);
+									console.log(gameday);
+									console.log(teamzwei);
+								}
+							}
+							if(typeof openTeams[teameins][teamzwei] != "undefined" &&
+								typeof openTeams[teamzwei][teameins] != "undefined") {
+								openTeams[teameins][teamzwei] = 0;
+								openTeams[teamzwei][teameins] = 0;
+							}
+							var game = {
+								teamone: teameins,
+								teamtwo: teamzwei
+							};
+							gameday.push(game);
+						}
+						schedule.push(gameday);
+					}
+				});
+				console.log(schedule);
+			}
+			
+			function switchGame(openTeams, gameday, teamone) {
+				var teamtwo = 0;
+				for(var i = 1; i < 19; i++) {
+					if(!teamInGameday(gameday, i)) {
+						teamtwo = i
+						i = 19;
+					}
+				}
+				var temp = -1;
+				for(var i = 0; i < gameday.length-1; i++) {
+					var tempteamone = gameday[i].teamone;
+					var tempteamtwo = gameday[i].teamtwo;
+					if(openTeams[teamone][tempteamone] != 0 && openTeams[teamtwo][tempteamtwo] != 0) {
+						console.log("test");
+						temp = tempteamone;
+						gameday[i].teamone = teamtwo;
+						openTeams[tempteamone][tempteamtwo] = tempteamtwo;
+						openTeams[tempteamtwo][tempteamone] = tempteamone;
+						
+						openTeams[teamtwo][tempteamtwo] = 0;
+						openTeams[tempteamtwo][teamtwo] = 0;
+						i = gameday.length;
+						return temp;
+					}
+					if(openTeams[teamone][tempteamtwo] != 0 && openTeams[teamtwo][tempteamone] != 0) {
+						console.log("test");
+						temp = tempteamtwo;
+						gameday[i].teamtwo = teamtwo;
+						openTeams[tempteamone][tempteamtwo] = tempteamtwo;
+						openTeams[tempteamtwo][tempteamone] = tempteamone;
+						
+						openTeams[teamtwo][tempteamone] = 0;
+						openTeams[tempteamone][teamtwo] = 0;
+						i = gameday.length;
+						return temp;
+					}
+				}
+				//console.log(gameday);
+				return temp;
+			}
+			
+			function teamInGameday(gameday, team) {
+				var find = false;
+				$.each(gameday, function(index, value) {
+					if(value.teamone == team || value.teamtwo == team) {
+						find = true;
+					}
+				});
+				return find;
+			}
+			
+			function gameExists(schedule, teamone, teamtwo) {
+			console.log("exist");
+				var find = false;
+				$.each(schedule, function(index, value) {
+					$.each(value, function(indexgameday, valuegameday) {
+						if(valuegameday.teamone == teamone || valuegameday.teamtwo == teamone) {
+							if(valuegameday.teamone == teamtwo || valuegameday.teamtwo == teamtwo) {
+								find = true;
+							}
+						}
+					});
+				});
+				return find;
+			}
+		</script>
+	</head>
+	<body>
+		<div id="teams">
+			<div class="left teamdiv" style="width:200px;">ID</div>
+			<div class="left teamdiv" style="width:200px;">Name</div>
+			<div class="left teamdiv" style="width:200px;">team_id</div>
+			<div class="left teamdiv" style="width:60px;">pic_id</div>
+			<div class="left teamdiv" style="width:160px;">coach</div>
+			<div class="left teamdiv" style="width:40px;">liga</div>
+			<div class="left teamdiv" style="width:100px;">Senden</div>
+		</div>
+		<br><br>
+		<!--<div class="clearleft">
+		<button onclick="spielplanErzeugen();">Spielplan erzeugen</button>
+		</div>-->
+	</body>
+</html>

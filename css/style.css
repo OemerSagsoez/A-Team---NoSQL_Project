@@ -1,0 +1,70 @@
+#teams {
+	
+}
+
+#teams img {
+	
+}
+
+.teamdiv {
+	text-align:center;
+	
+	border-left: solid black 1px;
+	border-right: solid black 1px;
+	padding:2px;
+}
+
+.spieltagKlein {
+	border:solid black 1px;
+	float:left;
+}
+
+li a {
+	cursor: pointer;
+}
+
+form {
+	margin-bottom: 0px;
+}
+
+.left {
+	float:left;
+}
+
+.clearleft {
+	clear:left;
+}
+
+.textcenter {
+	text-align: center;
+}
+
+#teamlogo {
+	margin-right:20px;
+}
+
+#teaminfo {
+	margin: 20px 0px;
+}
+
+.marginvertical {
+	margin: 20px 0px;
+}
+
+.marginhorizontal {
+	margin: 0px 20px;
+}
+
+.scrollbox {
+	height: 200px; 
+	overflow:auto;
+	!important
+}
+
+#teams form div {
+	
+}
+
+#standings {
+	display: none;
+}

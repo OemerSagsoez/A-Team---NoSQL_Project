@@ -1,0 +1,27 @@
+<html
+	<head>
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+	
+		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
+	</head>
+	<body>
+		<script>
+			getFromServer("/teams", function(data) {
+				$.each(data, function(index, value) {
+					for(var i = 0; i < 22; i++) {
+						var age = Math.round(Math.random() * (35 - 18)) + 18;
+						var position = 
+						var json = '{"firstname":"'+value.team_id+'", "surname":"Spieler'+i+'", "age": "'+age+'", "goals": '+0+', "position": "'+position+'"}';
+						postToServer("/teams", jsonString, function(data) {
+							console.log(data);
+						});
+					}
+				});
+			});
+		</script>
+	</body>
+</html>
