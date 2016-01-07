@@ -56,7 +56,7 @@ form {
 }
 
 .scrollbox {
-	height: 200px; 
+	height: 250px; 
 	overflow:auto;
 	!important
 }
@@ -67,4 +67,8 @@ form {
 
 #standings {
 	display: none;
+}
+
+.bold {
+	font-weight:bold;
 }

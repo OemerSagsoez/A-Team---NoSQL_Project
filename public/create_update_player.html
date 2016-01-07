@@ -1,0 +1,81 @@
+<html>
+	<head>
+	<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+	
+		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
+		<script>
+			getFromServer("/roster", showRoster);
+			function showRoster(data) {
+				$.each(data, function(index, value) {
+					var form = jQuery('<form/>', {action: "", onsubmit: "return false;"}).appendTo('#teams');
+					var div;
+					div = jQuery('<div/>', {class: "clearleft left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "id", value: value._id}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "teamid", value: value.teamid}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:150px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "firstname", value: value.firstname, style: "width:140px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:150px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "surname", value: value.surname, style: "width:140px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "age", value: value.age, style: "width:25px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "goals", value: value.goals, style: "width:25px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "position", value: value.position, style: "width:25px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:100px"}).appendTo(form);
+					jQuery('<button/>', {onclick: "submitForm(this);", text: "Senden"}).appendTo(div);
+				});
+			}
+			
+			function submitForm(button) {
+				var form = button.form;
+				var id = form.id.value;
+				var teamid = form.teamid.value;
+				var firstname = form.firstname.value;
+				var surname = form.surname.value;
+				var age = form.age.value;
+				var goals = form.goals.value;
+				var position = form.position.value;
+				
+				var jsonString = '{';
+				if(teamid != "") jsonString += '"teamid":"'+teamid+'", ';
+				if(firstname != "") jsonString += '"firstname":"'+firstname+'", ';
+				if(surname != "") jsonString += '"surname":"'+surname+'", ';
+				if(age != "") jsonString += '"age":"'+age+'", ';
+				if(goals != "") jsonString += '"goals":"'+goals+'", ';
+				if(position != "") jsonString += '"position":"'+position+'", ';
+				jsonString += '"active": "true"';
+				jsonString += '}';
+				if(id == "") {
+					postToServer("/roster", jsonString, function(data) {
+						console.log(data);
+					});
+				} else {
+					putToServer("/roster/"+id, jsonString, function(data) {
+						console.log(data);
+					});
+				}
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div id="teams">
+			<div class="left teamdiv" style="width:200px;">ID</div>
+			<div class="left teamdiv" style="width:200px;">team</div>
+			<div class="left teamdiv" style="width:150px;">vorname</div>
+			<div class="left teamdiv" style="width:150px;">nachname</div>
+			<div class="left teamdiv" style="width:60px;">alter</div>
+			<div class="left teamdiv" style="width:60px;">tore</div>
+			<div class="left teamdiv" style="width:60px;">position</div>
+			<div class="left teamdiv" style="width:100px;">Senden</div>
+		</div>
+		<br><br>
+		
+	</body>
+</html>

@@ -10,13 +10,16 @@
 	</head>
 	<body>
 		<script>
+			console.log("test");
 			getFromServer("/teams", function(data) {
+				console.log(data);
+				var allposition = new Array("TW", "TW", "TW", "LV", "LV", "IV", "IV", "IV", "IV", "RV", "RV", "DM", "DM", "LM", "LM", "RM", "RM", "OM", "OM", "ST", "ST", "ST");
 				$.each(data, function(index, value) {
 					for(var i = 0; i < 22; i++) {
 						var age = Math.round(Math.random() * (35 - 18)) + 18;
-						var position = 
-						var json = '{"firstname":"'+value.team_id+'", "surname":"Spieler'+i+'", "age": "'+age+'", "goals": '+0+', "position": "'+position+'"}';
-						postToServer("/teams", jsonString, function(data) {
+						var position = allposition[i];
+						var json = '{"teamid": "'+value._id+'", "firstname":"'+value.team_id+'", "surname":"Spieler'+i+'", "age": "'+age+'", "goals": '+0+', "position": "'+position+'"}';
+						postToServer("/roster", json, function(data) {
 							console.log(data);
 						});
 					}

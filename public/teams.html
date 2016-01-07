@@ -5,7 +5,6 @@
 	
 		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
 		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
-		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
 		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
 	</head>
 	<body>
@@ -19,165 +18,10 @@
 				</ul><br>
 			</nav>
 			<div id="teaminfobox"></div>
-			<script>
-				var team = null;
-				var allTeams = null;
-				var player = null;
-			
-				getFromServer("/teams/"+$_GET("team"), teamresponse);
-				function teamresponse(data) {
-					team = data;
-					$('#teamlogo').attr("src", "images/small/"+data.pic_id+".png");
-					$('#teaminfo').append(data.name);
-					getTeamRoster(showTeamRoster);
-				}
-				
-				function selectTeamInfo(element, data) {
-					$("#teamTab").removeClass("active");
-					$("#spielplanTab").removeClass("active");
-					$("#"+data+"Tab").addClass("active");
-					var league = "scheduleLeagueOne";
-					if(team.league == 2) { league = "scheduleLeagueTwo" }
-					
-					if(data == "team") getTeamRoster(showTeamRoster);
-					if(data == "spielplan") getFromServer("/schedule/"+team.league, showTeamSchedule);
-				}
-				
-				function getTeamRoster(callback) {
-					if(player == null) {
-						getFromServer("/squad/"+$_GET("team"), function(data) {
-							player = data;
-							callback(data);
-						});
-					} else {
-						callback(player);
-					}
-				}
-				
-				function showTeamRoster(data) {
-					$('#teaminfobox').empty();
-					//Build Table
-					var table = jQuery('<table/>', {
-							id: "teamplayertable",
-							border: "1"
-					}).appendTo('#teaminfobox');
-					var tr = jQuery('<tr/>', {
-					}).appendTo(table);
-					jQuery('<th/>', {
-						text: "Vorname"
-					}).appendTo(tr);
-					jQuery('<th/>', {
-						text: "Nachname"
-					}).appendTo(tr);
-					jQuery('<th/>', {
-						text: "Alter"
-					}).appendTo(tr);
-					jQuery('<th/>', {
-						text: "Position"
-					}).appendTo(tr);
-					jQuery('<th/>', {
-						text: "Tore"
-					}).appendTo(tr);
-						
-					//Show Players
-					$.each(data.player, function(index, value) {
-						var tr = jQuery('<tr/>', {
-						}).appendTo(table);
-						
-						jQuery('<td/>', {
-							text: value.firstname
-						}).appendTo(tr);
-						jQuery('<td/>', {
-							text: value.surname
-						}).appendTo(tr);
-						jQuery('<td/>', {
-							text: value.age
-						}).appendTo(tr);
-						jQuery('<td/>', {
-							text: value.position
-						}).appendTo(tr);
-						jQuery('<goals/>', {
-							text: value.goals
-						}).appendTo(tr);
-					});
-				}
-				
-				function showTeamSchedule(data) {
-					getFromServer("/teams", function(dataTeams) {	// Need for the picture ID's
-						allTeams = dataTeams;
-						$('#teaminfobox').empty();
-						$.each(data, function(index, value) {
-							if(value.home == team._id || value.away == team._id) {
-								console.log(value.dateobject);
-								var divgame = jQuery('<div/>', {
-									class: 'clearleft'
-								}).appendTo('#teaminfobox');
-
-								jQuery('<div/>', {
-									text: value.date+", "+value.time,
-									class: 'left'
-								}).appendTo(divgame);
-								
-								var div = jQuery('<div/>', {
-									width: '40px',
-									height: '40px',
-									class: 'game left textcenter'
-								}).appendTo(divgame);
-								
-								var a = jQuery('<a/>', {
-									href: 'teams.html?team='+value.home,
-								}).appendTo(div);
-								
-								jQuery('<img/>', {
-									src: "/images/small/"+picForTeamID(value.home)+".png",
-									width: '30px',
-									height: '30px'
-								}).mouseover(function(elem) {
-									$( this ).animate({ width: "40px", height: "40px" }, 300);
-								}).mouseout(function(elem) {
-									$( this ).animate({ width: "30px", height: "30px" }, 300);
-								}).appendTo(a);
-								
-								jQuery('<div/>', {
-									text: " "+value.homegoals+" : "+value.awaygoals+" ",
-									class: 'left marginhorizontal'
-								}).appendTo(divgame);
-								
-								var div = jQuery('<div/>', {
-									width: '40px',
-									height: '40px',
-									class: 'game left textcenter'
-								}).appendTo(divgame);
-								
-								var a = jQuery('<a/>', {
-									href: 'teams.html?team='+value.away,
-								}).appendTo(div);
-								
-								jQuery('<img/>', {
-									src: "/images/small/"+picForTeamID(value.away)+".png",
-									width: '30px',
-									height: '30px'
-								}).mouseover(function(elem) {
-									$( this ).animate({ width: "40px", height: "40px" }, 300);
-								}).mouseout(function(elem) {
-									$( this ).animate({ width: "30px", height: "30px" }, 300);
-								}).appendTo(a);
-							}
-						});
-					});
-				}
-			
-				/*
-					Return the picture ID if a Team. Need the global Variable
-					allTeams for it.
-				*/
-				function picForTeamID(teamid) {
-					for(var i = 0; i < allTeams.length; i++) {
-						if(allTeams[i]._id == teamid) { return allTeams[i].pic_id; }
-					}
-				}
-
-			</script>
 		</div>
 	</body>
+	<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+	<script>
+		teamPage();
+	</script>
 </html>

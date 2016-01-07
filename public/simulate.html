@@ -1,0 +1,40 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+		
+		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
+	</head>
+	<body>
+		<form name="simulate" onsubmit="return false;" action="">
+			<input type="text" name="gameday" value="gameday">
+			<input type="text" name="league" value="league">
+			<button onclick="submitForm(this);">Senden</button>
+		</form>
+		
+		<script>
+			function submitForm(elem) {
+				var form = elem.form;
+				var gameday = form.gameday.value;
+				var league = form.league.value;
+				simulateGameday(league, gameday);
+				return false;
+			}
+			
+			function simulateGameday(league, gameday) {
+				getFromServer("/schedule/"+league+"/"+gameday, function(data) {
+					$.each(data, function(index, value) {
+						if(value.played != "true") {
+							simulateGame(value);
+							console.log("simuliert");
+						}
+					});
+				});
+			}
+			
+		</script>
+	</body>
+</html>

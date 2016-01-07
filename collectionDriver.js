@@ -39,26 +39,14 @@ CollectionDriver.prototype.get = function(collectionName, id, callback) { //A
     });
 }
 
-
-//find a specific Team
-CollectionDriver.prototype.getTeam = function(collectionName, id, callback) { //A
-    this.getCollection(collectionName, function(error, the_collection) {
-        if (error) {
-			callback(error)
-        }
-		else {
-            var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$"); //B	// Nur Team Namen zulassenn
-			if (!checkForHexRegExp.test(id)) callback({error: "invalid id"});
-            else the_collection.findOne({'_id':ObjectID(id)}, function(error,doc) { //C
-            	if (error) callback(error)
-            	else callback(null, doc);
-            });
-        }
-    });
-}
-
-CollectionDriver.prototype.getScheduleOfTeam = function(collectionName, search, callback) { //A
-    this.getCollection(collectionName, function(error, the_collection) {
+CollectionDriver.prototype.getInfoOfTeam = function(collectionName, search, callback) { //A
+	var sort = "";
+	if(collectionName == "roster") {
+		sort = {position: 1};
+	} else if(collectionName == "schedule") {
+		sort = {gameday: 1};
+	}
+	this.getCollection(collectionName, function(error, the_collection) {
         if (error) {
 			callback(error)
         }
@@ -69,7 +57,7 @@ CollectionDriver.prototype.getScheduleOfTeam = function(collectionName, search, 
 				callback({error: "invalid id"});
 			}
             else */
-			the_collection.find(search).sort({datesort: 1}).toArray(function(error, results) { //B
+			the_collection.find(search).sort(sort).toArray(function(error, results) { //B
 			  if( error ) callback(error)
 			  else callback(null, results)
 			});
@@ -83,13 +71,7 @@ CollectionDriver.prototype.getSchedule = function(collectionName, search, callba
 			callback(error)
         }
 		else {
-            //var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$"); //B	// Nur Team Namen zulassenn
-			checkForHexRegExp = true;
-            /*if (!checkForHexRegExp.test(id)) {
-				callback({error: "invalid id"});
-			}
-            else */
-			the_collection.find(search).sort({datesort: 1}).toArray(function(error, results) { //B
+			the_collection.find(search).sort({gameday: 1}).toArray(function(error, results) { //B
 			  if( error ) callback(error)
 			  else callback(null, results)
 			});
@@ -100,7 +82,6 @@ CollectionDriver.prototype.getSchedule = function(collectionName, search, callba
 
 //find Teams in a League
 CollectionDriver.prototype.getTeamByField = function(collectionName, search, callback) { //A
-	console.log("test");
     this.getCollection(collectionName, function(error, the_collection) {
         if (error) {
 			callback(error)
@@ -141,6 +122,18 @@ CollectionDriver.prototype.update = function(collectionName, obj, entityId, call
 	        //obj._id = ObjectID(entityId); //A convert to a real obj id
 	        obj.updated_at = new Date(); //B
             the_collection.updateOne({"_id":ObjectID(entityId)}, {$set: obj}, function(error,doc) { //C
+            	if (error) callback(error)
+            	else callback(null, obj);
+            });
+        }
+    });
+}
+
+CollectionDriver.prototype.goalForPlayer = function(collectionName, obj, entityId, callback) {
+    this.getCollection(collectionName, function(error, the_collection) {
+        if (error) callback(error)
+        else {
+            the_collection.updateOne({"_id":ObjectID(entityId)}, obj, function(error,doc) { //C
             	if (error) callback(error)
             	else callback(null, obj);
             });

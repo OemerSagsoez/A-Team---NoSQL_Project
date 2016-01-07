@@ -1,0 +1,94 @@
+<html>
+	<head>
+	<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+	
+		<script language="javascript" type="text/javascript" src="skripte/jquery-2.1.1.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/communication.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/functions.js"></script>
+		<script language="javascript" type="text/javascript" src="skripte/bootstrap.js"></script>
+		<script>
+			getFromServer("/schedule", showSchedule);
+			function showSchedule(data) {
+				$.each(data, function(index, value) {
+					var form = jQuery('<form/>', {action: "", onsubmit: "return false;"}).appendTo('#teams');
+					var div;
+					div = jQuery('<div/>', {class: "clearleft left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "id", value: value._id}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "gameday", value: value.gameday, style: "width:30px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "league", value: value.league, style: "width:30px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:90px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "date", value: value.date, style: "width:90px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "home", value: value.home}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:200px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "away", value: value.away}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "homegoals", value: value.homegoals, style: "width:30px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "awaygoals", value: value.awaygoals, style: "width:30px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:60px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "time", value: value.time, style: "width:50px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:50px"}).appendTo(form);
+					jQuery('<input/>', {type: "text", name: "played", value: value.played, style: "width:40px;"}).appendTo(div);
+					div = jQuery('<div/>', {class: "left teamdiv", style: "width:100px"}).appendTo(form);
+					jQuery('<button/>', {onclick: "submitForm(this);", text: "Senden"}).appendTo(div);
+				});
+			}
+			
+			function submitForm(button) {
+				var form = button.form;
+				var id = form.id.value;
+				var gameday = form.gameday.value;
+				var league = form.league.value;
+				var date = form.date.value;
+				var home = form.home.value;
+				var away = form.away.value;
+				var homegoals = form.homegoals.value;
+				var awaygoals = form.awaygoals.value;
+				var time = form.time.value;
+				var played = form.played.value;
+				var jsonString = '{';
+				if(gameday != "") jsonString += '"gameday":"'+gameday+'", ';
+				if(league != "") jsonString += '"league":"'+league+'", ';
+				if(date != "") jsonString += '"date":"'+date+'", ';
+				if(home != "") jsonString += '"home":"'+home+'", ';
+				if(away != "") jsonString += '"away":"'+away+'", ';
+				if(homegoals != "") jsonString += '"homegoals":"'+homegoals+'", ';
+				if(awaygoals != "") jsonString += '"awaygoals":"'+awaygoals+'", ';
+				if(time != "") jsonString += '"time":"'+time+'", ';
+				if(played != "") jsonString += '"played":"'+played+'", ';
+				jsonString += '"active": "true"';
+				jsonString += '}';
+				if(id == "") {
+					postToServer("/schedule", jsonString, function(data) {
+						console.log(data);
+					});
+				} else {
+					putToServer("/schedule/"+id, jsonString, function(data) {
+						console.log(data);
+					});
+				}
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div id="teams">
+			<div class="left teamdiv" style="width:200px;">ID</div>
+			<div class="left teamdiv" style="width:60px;">Gameday</div>
+			<div class="left teamdiv" style="width:60px;">League</div>
+			<div class="left teamdiv" style="width:90px;">Datum</div>
+			<div class="left teamdiv" style="width:200px;">Home</div>
+			<div class="left teamdiv" style="width:200px;">Away</div>
+			<div class="left teamdiv" style="width:60px;">hgoals</div>
+			<div class="left teamdiv" style="width:60px;">agoals</div>
+			<div class="left teamdiv" style="width:60px;">time</div>
+			<div class="left teamdiv" style="width:50px;">played</div>
+			<div class="left teamdiv" style="width:100px;">Senden</div>
+		</div>
+		<br><br>
+	</body>
+</html>
